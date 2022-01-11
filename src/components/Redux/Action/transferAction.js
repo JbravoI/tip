@@ -28,6 +28,7 @@ export const transfer = (acctNumber, receiver, amount, pin) => async (dispatch) 
             type: TRANSFER_SUCCESS,
             payload: data
         })
+        console.log(data)
         dispatch(getUser(acctNumber));
         Navigate("/dashboard")
 

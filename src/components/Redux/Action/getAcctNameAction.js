@@ -19,7 +19,6 @@ export const getAccountName = (acctNumber) => async (dispatch) => {
                 'Content-type': 'application/json'
             }
         }
-        console.log(acctNumber)
         const { data } = await axios.get(
             `${url}/api/Users/UserDetails?acctNum=${acctNumber}`,
             config

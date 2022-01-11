@@ -4,8 +4,12 @@ import { tip, tipWalletDetails, toggleTip } from '../Redux/Action/walletActions'
 import { useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import TipHistory from './TipHistory';
+import UserModal from '../Layout/UserModal';
 
 export default function UserWallet() {
+    const [showModal, setShowModal] = useState(false);
+    const [percentValidity, setPercentValidity] = useState(false);
+    const [whenTippedValidity, setWhenTippedValidity] = useState(false);
     const userLogin = useSelector((state) => state.userLogin);
     const { userInfo } = userLogin;
     const walletStatus = useSelector((state) => state.walletDetails);
@@ -23,7 +27,7 @@ export default function UserWallet() {
    
 
     const [form, setForm] = useState({
-        tipPercent: 0,
+        tipPercent: "",
         whenTipped: ""
     });
     const [falseStatus, setFalseStatus] = useState(false);
@@ -41,11 +45,20 @@ export default function UserWallet() {
 
     };
     const tipped = () => {
-        dispatch(tip(walletDetails.acctNumber, walletDetails.tipStatus, form.tipPercent))
+        if(!form.tipPercent) {
+            setPercentValidity(true);
+        } else if(!form.whenTipped) {
+            setWhenTippedValidity(true);
+        } else {
+            dispatch(tip(walletDetails.acctNumber, walletDetails.tipStatus, form.tipPercent));
+            setShowModal(true);
+        }
+        
     }
     
     const toggleFalse = () => {
         dispatch(toggleTip(userInfo.acctNumber, falseStatus));
+        setShowModal(true);
     }
 
     const toggleTrue = () => {
@@ -64,12 +77,10 @@ export default function UserWallet() {
     ]
     const whenTipped = [
         "On every debit",
-        "When I send money",
-        "When I recharge",
-        "When I buy data",
-        "When I pay bills (electricity, TV subscription, etc.)"
+        "When I send money"
     ]
     return (
+        <div>
         <div className="container d-flex ">
             <div className="w-50">
                 { !error && 
@@ -165,6 +176,9 @@ export default function UserWallet() {
                                                     <option value={p}>{p}</option>
                                                 ))}
                                             </select>
+                                            {whenTippedValidity &&
+                                             <p className="text-danger" style={{fontSize:".7rem"}}>this field cannot be empty</p>
+                                            }
                                         </div>
                     
                                         <div>
@@ -174,6 +188,10 @@ export default function UserWallet() {
                                                     <option value={tip}>{tip}</option>
                                                 ))}
                                             </select>
+                                            {percentValidity &&
+                                             <p className="text-danger" style={{fontSize:".7rem"}}>this field cannot be empty</p>
+                                            }
+                                           
                                         </div>
                                         <div>
                                             <button onClick={tipped} className="p-2 mt-3 w-100 rounded text-white" style={{border:"1px solid grey", background:"#811a52"}}>
@@ -182,7 +200,6 @@ export default function UserWallet() {
                                             </button>
                                         </div>
                                     </div>
-
                                 }    
                         </div>
                     </div>
@@ -198,6 +215,20 @@ export default function UserWallet() {
                     <TipHistory/>
                     }
             </div>
+        </div>
+
+        <div>
+            {
+                showModal &&
+                <UserModal 
+                showModal = {() => setShowModal(true)} 
+                onClose = {() => setShowModal(false)} 
+                walletDetails={walletDetails.tipstatus}
+                trueStatus={trueStatus}
+                falseStatus={falseStatus}
+                />
+            }
+        </div>
         </div>
     )
 }
