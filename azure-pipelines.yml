@@ -11,7 +11,8 @@ variables:
   uiBuild : '$(uiSource)/build'
   
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-2019
+  #vmImage: ubuntu-latest
 
 steps:
 - task: NodeTool@0
